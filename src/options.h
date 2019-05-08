@@ -7,8 +7,8 @@
 
 int find_option(char *list[], int n, char opt);
 void dump_help();
-int handle_file(char *filename, int option);
+FILE *handle_file(char *filename, int option);
 char **find_rules (char *list[], int n);
-void free_string(char **rules, int n);
-void dump_rules(char **rules, int n);
+void free_string(char **rules);
+void dump_rules(char **rules);
 #endif

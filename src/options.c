@@ -36,7 +36,7 @@ void dump_help()
     printf("Allowed options are \n -f FILE \n -h\n");
 }
 
-int handle_file(char *filename, int option)
+FILE *handle_file(char *filename, int option)
 {
     FILE *file;
     file = fopen(filename, "r");
@@ -44,16 +44,15 @@ int handle_file(char *filename, int option)
     {
         if(option == 1)
             printf("Error: File cannot be found/opened\n");
-        return -1;
+        return NULL;
     }
-    fclose(file);
-    return 0;
+    return file;
 }
 
 char **find_rules (char *list[], int n)
 {
     int count = 0;
-    char **res = (char**)malloc(n * sizeof(char*));
+    char **res = (char**)malloc((n+1)* sizeof(char*));
     for(int i = 0; i < n; i++)
     {
         res[i] = NULL;
@@ -68,14 +67,15 @@ char **find_rules (char *list[], int n)
             count++;
         }
     }
+    res[count] = NULL;
     return res;
 }
 
-void dump_rules(char **rules, int n)
+void dump_rules(char **rules)
 {
     if(rules == NULL)
         return;
-    for(int i = 0; i < n; i++)
+    for(int i = 0; *(rules+i) != NULL; i++)
     {
         if(rules[i] != NULL)
         {
@@ -85,11 +85,11 @@ void dump_rules(char **rules, int n)
     }
 }
 
-void free_string(char **rules, int n)
+void free_string(char **rules)
 {
     if(rules == NULL)
         return;
-    for(int i = 0; i < n; i++)
+    for(int i = 0; *(rules + i) != NULL; i++)
     {
         if(rules[i] != NULL)
         {
