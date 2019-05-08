@@ -12,10 +12,10 @@ struct Node_rule
     char **depend;
     //char **depend_file;
     //node_rule **depend_rule;
-    char *recipe;
+    char **recipe;
 };
 
-struct Node_rule *create_node_rule(char *line1, char *line2);
+struct Node_rule *create_node_rule(char *line1, FILE *input);
 void dump_node_rule(struct Node_rule* n);
 void free_node_rule(struct Node_rule *n);
 

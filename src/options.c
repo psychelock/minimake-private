@@ -80,7 +80,7 @@ void dump_rules(char **rules)
         if(rules[i] != NULL)
         {
             printf(rules[i]);
-            printf("\n");
+            printf(" ");
         }
     }
 }

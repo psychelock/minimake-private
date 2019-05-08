@@ -28,8 +28,6 @@ static char **split_depend(char *depend)
     char *token = strtok(depend, " ");
     while(token != NULL)
     {
-        //res = realloc(res, (count+2 * sizeof(char*)));
-
         res[count] = (char*)malloc(50*sizeof(char));
         strcpy(res[count], token);
         count++;
@@ -39,7 +37,43 @@ static char **split_depend(char *depend)
     return res;
 }
 
-struct Node_rule* create_node_rule (char *line1, char *line2)
+static void disgusting(char *string, FILE *input)
+{
+    for(int i = strlen(string)-1; i >=0; i--)
+    {
+        ungetc(string[i], input);
+    }
+}
+
+static char **split_commands(FILE *input)
+{
+    int count = 1;
+    char **res = (char**)malloc(sizeof(char*));
+    char *buffer= NULL;
+    size_t len  = 0;
+    ssize_t read;
+
+    while((read = getline(&buffer, &len, input)) != -1)
+    {
+        if(buffer[0] == 9 || buffer[0] == '#' || buffer[0] == '\n')
+        {
+            res[count-1] = (char*)malloc(255*sizeof(char));
+            strcpy(res[count-1], buffer);
+            count++;
+            res = realloc(res, (count) * sizeof(char*));
+            res[count-1] = NULL;
+        }
+        else
+        {
+            disgusting(buffer, input);
+            break;
+        }
+    }
+    free(buffer);
+    return res;
+}
+
+struct Node_rule* create_node_rule (char *line1, FILE *input)
 {
     if(*line1 == ':')
         parse_error("Target", "Empty target");
@@ -47,9 +81,8 @@ struct Node_rule* create_node_rule (char *line1, char *line2)
     if(strchr(target, ' ') != NULL)
         parse_error("Target", "Multiple targets");
     char *depend= strtok(NULL, ":");
-    if(*line2 != 9 && *line2 != '\n')
-        parse_error("Recipe", "Missing beginning tab");
-    char *recipe= line2;
+
+    char **recipe = split_commands(input);
 
     struct Node_rule *res = (struct Node_rule*)malloc(sizeof(struct Node_rule));
     res->target = target;
@@ -60,14 +93,17 @@ struct Node_rule* create_node_rule (char *line1, char *line2)
 
 void dump_node_rule(struct Node_rule* n)
 {
-    printf("Target is           :%s\n",n->target);
-    printf("Dependenc are       :");
+    printf("Target is           :%s\n\n",n->target);
+    printf("Dependencies are    :");
     dump_rules(n->depend);
-    printf("Recipe is           :%s\n",n->recipe);
+    printf("\n");
+    printf("Recipes are         :\n");
+    dump_rules(n->recipe);
 }
 
 void free_node_rule(struct Node_rule *n)
 {
     free_string(n->depend);
+    free_string(n->recipe);
     free(n);
 }
