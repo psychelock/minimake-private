@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_makefile(FILE *input);
+#include "parse_rule.h"
+
+struct Node_rule** parse_makefile(FILE *input);
 void parse_error(char *err, char* msg);
 #endif
 

@@ -57,6 +57,8 @@ static char **split_commands(FILE *input)
     {
         if(buffer[0] == 9 || buffer[0] == '#' || buffer[0] == '\n')
         {
+            if(buffer[0] == '\n')
+                continue;
             res[count-1] = (char*)malloc(255*sizeof(char));
             strcpy(res[count-1], buffer);
             count++;
@@ -107,3 +109,18 @@ void free_node_rule(struct Node_rule *n)
     free_string(n->recipe);
     free(n);
 }
+
+void free_all_nodes(struct Node_rule **n)
+{
+    if(!n)
+        return;
+    for(int i = 0; *(n + i) != NULL; i++)
+    {
+        if(n[i] != NULL)
+        {
+            free_node_rule(n[i]);
+        }
+    }
+    free(n);
+}
+

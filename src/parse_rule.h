@@ -18,5 +18,6 @@ struct Node_rule
 struct Node_rule *create_node_rule(char *line1, FILE *input);
 void dump_node_rule(struct Node_rule* n);
 void free_node_rule(struct Node_rule *n);
+void free_all_nodes(struct Node_rule **n);
 
 #endif

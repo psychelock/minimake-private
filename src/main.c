@@ -3,10 +3,13 @@
 #include <stdlib.h>
 #include "options.h"
 #include "parse.h"
+#include "parse_rule.h"
+#include "execute_node.h"
 
 int main (int argc, char *argv[])
 {
-    
+    char **rules;
+    struct Node_rule **nodes;
     if(find_option(argv, argc, 'h') != -1)
     {
         dump_help();
@@ -30,9 +33,12 @@ int main (int argc, char *argv[])
                 return 1;
         }
     }
-    char **rules = find_rules(argv, argc-1);
-    //dump_rules(rules);
-    free_string(rules);
+    rules = find_rules(argv, argc-1);
     if(file != NULL)
-        parse_makefile(file);
+        nodes = parse_makefile(file);
+
+    exec_all_rules(rules, nodes);
+    free_all_nodes(nodes);
+    free_string(rules);
+    return 0;
 }

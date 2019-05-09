@@ -1,3 +1,4 @@
 all:
-	echo a line # with a commnet
-	#just a comment
+	echo all
+this:
+	echo this
