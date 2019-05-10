@@ -80,6 +80,9 @@ struct Node_rule* create_node_rule (char *line1, FILE *input)
     if(*line1 == ':')
         parse_error("Target", "Empty target");
     char *target= strtok(line1, ":");
+    char *rule = (char *)malloc(sizeof(char *));
+    strcpy(rule, target);
+
     if(strchr(target, ' ') != NULL)
         parse_error("Target", "Multiple targets");
     char *depend= strtok(NULL, ":");
@@ -87,7 +90,7 @@ struct Node_rule* create_node_rule (char *line1, FILE *input)
     char **recipe = split_commands(input);
 
     struct Node_rule *res = (struct Node_rule*)malloc(sizeof(struct Node_rule));
-    res->target = target;
+    res->target = rule;
     res->depend = split_depend(depend);
     res->recipe = recipe;
     return res;
@@ -105,6 +108,7 @@ void dump_node_rule(struct Node_rule* n)
 
 void free_node_rule(struct Node_rule *n)
 {
+    free(n->target);
     free_string(n->depend);
     free_string(n->recipe);
     free(n);

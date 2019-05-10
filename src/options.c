@@ -49,6 +49,18 @@ FILE *handle_file(char *filename, int option)
     return file;
 }
 
+static int rule_exist(char **rules, char *find)
+{
+    if(!rules)
+        return 0;
+    for(int i = 0; *(rules+i) != NULL; i++)
+    {
+        if(strcmp(rules[i],find) == 0)
+            return 1;
+    }
+    return 0;
+}
+
 char **find_rules (char *list[], int n)
 {
     int count = 0;
@@ -60,7 +72,7 @@ char **find_rules (char *list[], int n)
     int index = find_option(list, n, 'f');
     for(int i = 1; i <= n; i++)
     {
-        if(i != index+1 && *list[i] != '-')
+        if(i != index+1 && *list[i] != '-' && !rule_exist(res, list[i]))
         {
             res[count] = (char*)malloc(50*sizeof(char));
             strcpy(res[count], list[i]);

@@ -106,7 +106,7 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
 
 void exec_all_rules(char **rules, struct Node_rule **nodes)
 {
-    if(!rules)
+    if(!rules[0])
     {
         execute_node(nodes[0]);
         return;
