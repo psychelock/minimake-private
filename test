@@ -1,6 +1,7 @@
-all:
-	ls lol
+all: a b
 	echo all
 
-this:
-	echo this
+a:
+	echo a
+b:
+	echo b

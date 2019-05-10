@@ -105,11 +105,32 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
     }
     return NULL;
 }
+void execute_all_dep(char *target, char **depend, struct Node_rule **nodes
+                       ,int parent)
+{
+    //char targettime[100] = "";
+    struct tm *tm = last_modif(target);
+    //strftime(targettime, 100, "%d/%m/%Y %H:%M:%S", targettm);
+    if(tm && parent == 1)
+    {
+        printf("minimake: Nothing to be done for '%s'.\n", target);
+        return;
+    }
+    else if(tm && ( strcmp(depend[0], "\n") == 0))
+    {
+        return;
+    }
+    else
+    {
+        exec_all_rules(depend, nodes);
+    }
+}
 
 void exec_all_rules(char **rules, struct Node_rule **nodes)
 {
     if(!rules[0])
     {
+        execute_all_dep(nodes[0]->target , nodes[0]->depend, nodes, 1);
         execute_node(nodes[0]);
         return;
     }
@@ -117,7 +138,10 @@ void exec_all_rules(char **rules, struct Node_rule **nodes)
     {
         struct Node_rule *tmp = find_node(rules[i], nodes);
         if(tmp)
+        {
+            execute_all_dep(tmp->target , tmp->depend, nodes, 1);
             execute_node(tmp);
+        }
         else
         {
             printf("minimake: no rule to make target '%s'\n", rules[i]);
@@ -125,4 +149,5 @@ void exec_all_rules(char **rules, struct Node_rule **nodes)
         }
     }
 }
+
 
