@@ -80,13 +80,15 @@ void execute_node(struct Node_rule *n)
             {
                 execl("/bin/sh", "sh", "-c", commands[i], 0);
                 fprintf(stderr, "execl failure!\n");
-                exit(1);
+                exit(2);
             }
             else
             {
                 if(dontprint)
                     commands[i] = add_start(commands[i], '@');
                 wait(&status);
+                if(WEXITSTATUS(status) != 0)
+                    exit(2);
             }
         }
     }

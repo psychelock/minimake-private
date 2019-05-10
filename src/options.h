@@ -8,7 +8,4 @@
 int find_option(char *list[], int n, char opt);
 void dump_help();
 FILE *handle_file(char *filename, int option);
-char **find_rules (char *list[], int n);
-void free_string(char **rules);
-void dump_rules(char **rules);
 #endif

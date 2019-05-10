@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "parse.h"
 #include "options.h"
+#include "tools.h"
 struct Node_rule
 {
     char *target;

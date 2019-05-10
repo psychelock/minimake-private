@@ -5,7 +5,7 @@
 #include "parse.h"
 #include "parse_rule.h"
 #include "execute_node.h"
-
+#include "tools.h"
 int main (int argc, char *argv[])
 {
     char **rules;
@@ -38,6 +38,9 @@ int main (int argc, char *argv[])
         nodes = parse_makefile(file);
 
     exec_all_rules(rules, nodes);
+    /*char t[100] = "";
+    strftime(t, 100, "%d/%m/%Y %H:%M:%S", last_modif(rules[0]));
+    printf(t);*/
     free_all_nodes(nodes);
     free_string(rules);
     return 0;

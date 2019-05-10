@@ -1,7 +1,6 @@
-all: foo
+all:
+	ls lol
+	echo all
 
-foo:
-	echo foo
-
-bar: baz
-baz:
+this:
+	echo this
