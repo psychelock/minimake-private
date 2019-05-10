@@ -1,4 +1,7 @@
-all:
-	echo all
-this:
-	echo this
+all: foo
+
+foo:
+	echo foo
+
+bar: baz
+baz:
