@@ -5,9 +5,11 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <time.h>
 #include "parse_rule.h"
+#include "tools.h"
 
-void execute_node(struct Node_rule* n, int parent);
-void exec_list(char **rules, struct Node_rule **nodes);
+error execute_node(struct Node_rule* n);
+error exec_list(char **rules, struct Node_rule **nodes);
 
 #endif

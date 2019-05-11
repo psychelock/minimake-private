@@ -6,6 +6,7 @@
 #include "parse_rule.h"
 #include "execute_node.h"
 #include "tools.h"
+
 int main (int argc, char *argv[])
 {
     char **rules;
@@ -36,8 +37,12 @@ int main (int argc, char *argv[])
     rules = find_rules(argv, argc-1);
     if(file != NULL)
         nodes = parse_makefile(file);
-    exec_list(rules, nodes);
-    free_all_nodes(nodes);
-    free_string(rules);
+    if(!nodes[0])
+    {
+        fprintf(stderr, "minimake: no target to build");
+        exit(2);
+    }
+    enum error returnval = exec_list( rules, nodes);
+    handle_return_and_free(returnval, rules, nodes);
     return 0;
 }

@@ -11,8 +11,6 @@ struct Node_rule
 {
     char *target;
     char **depend;
-    //char **depend_file;
-    //node_rule **depend_rule;
     char **recipe;
 };
 

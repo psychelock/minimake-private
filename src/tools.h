@@ -9,10 +9,24 @@
 #include <sys/stat.h>
 
 #include "options.h"
+#include "parse_rule.h"
+struct Node_rule;
+
+typedef enum error
+{
+    NoError,
+    NoRule,
+    ExecErrorFork, /* exec fails at fork exit 2*/
+    ExecErrorExecl, /* exec fails at execl exit 2*/
+    ExecError /* exec fails at execution exit 2*/
+} error;
 
 void free_string(char **rules);
+int rule_exist(char **rules, char *find, int n);
 char **find_rules (char *list[], int n);
 void dump_rules(char **rules);
-struct tm* last_modif(char *path);
+int last_modif(char *path);
+void handle_return_and_free(enum error val, char **rules, struct Node_rule **nodes);
+void free_resources(char **rules, struct Node_rule **nodes);
 
 #endif
