@@ -43,11 +43,11 @@ static char *add_start(char *a, char b)
     return res;
 }
 
-void execute_node(struct Node_rule *n)
+void execute_node(struct Node_rule *n, int parent)
 {
     int dontprint;
     char **commands = n->recipe;
-    if(commands[0] == NULL)
+    if(commands[0] == NULL && parent == 1)
     {
         printf("minimake: Nothing to be done for '%s'.\n", n->target);
         return;
@@ -128,14 +128,13 @@ void execute_all_dep(struct Node_rule *rule,int parent)
 }
 */
 
-void exec_list(char **rules, struct Node_rule **nodes, int parent)
+void exec_list(char **rules, struct Node_rule **nodes)
 {
-    parent = parent;
     if(!rules[0])
     {
         if(strcmp(nodes[0]->depend[0], "") != 0)
-            exec_list(nodes[0]->depend, nodes, 1);
-        execute_node(nodes[0]);
+            exec_list(nodes[0]->depend, nodes);
+        execute_node(nodes[0], 1);
         return;
     }
     for(int i =0 ; *(i+rules) != NULL; i++)
@@ -144,8 +143,8 @@ void exec_list(char **rules, struct Node_rule **nodes, int parent)
         if(tmp)
         {
             if(strcmp(tmp->depend[0], "") != 0)
-                exec_list(tmp->depend, nodes, 0);
-            execute_node(tmp);
+                exec_list(tmp->depend, nodes);
+            execute_node(tmp, 0);
         }
         else
         {

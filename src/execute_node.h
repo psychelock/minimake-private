@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "parse_rule.h"
 
-void execute_node(struct Node_rule* n);
-void exec_list(char **rules, struct Node_rule **nodes, int parent);
+void execute_node(struct Node_rule* n, int parent);
+void exec_list(char **rules, struct Node_rule **nodes);
 
 #endif

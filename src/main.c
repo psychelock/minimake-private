@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
     rules = find_rules(argv, argc-1);
     if(file != NULL)
         nodes = parse_makefile(file);
-    exec_list(rules, nodes, 1);
+    exec_list(rules, nodes);
     free_all_nodes(nodes);
     free_string(rules);
     return 0;

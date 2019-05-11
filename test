@@ -1,7 +1,8 @@
-all: b a
-	echo all
+all: foo
 
-a:
-	echo a
-b:
-	echo b
+foo:
+	echo foo
+
+bar: baz
+
+baz:
