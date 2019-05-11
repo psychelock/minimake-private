@@ -43,6 +43,7 @@ int main (int argc, char *argv[])
         exit(2);
     }
     enum error returnval = exec_list( rules, nodes);
-    handle_return_and_free(returnval, rules, nodes);
+    free_resources(rules, nodes);
+    handle_return(returnval);
     return 0;
 }

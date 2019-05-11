@@ -50,7 +50,7 @@ void dump_rules(char **rules)
 
 void free_string(char **rules)
 {
-    if(rules == NULL)
+    if(!rules)
         return;
     for(int i = 0; *(rules + i) != NULL; i++)
     {
@@ -79,9 +79,8 @@ void free_resources(char **rules, struct Node_rule **nodes)
     free_string(rules);
 }
 
-void handle_return_and_free(enum error val, char **rules, struct Node_rule **nodes)
+void handle_return(enum error val)
 {
-    free_resources(rules, nodes);
     switch(val)
     {
         case ExecErrorFork:

@@ -4,7 +4,9 @@ all:
 foo: bar
 	echo foo
 
-bar:
+bar: baz
+
+baz:
 
 comment:
 	echo a line # with a comment

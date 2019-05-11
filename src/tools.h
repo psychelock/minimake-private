@@ -26,7 +26,7 @@ int rule_exist(char **rules, char *find, int n);
 char **find_rules (char *list[], int n);
 void dump_rules(char **rules);
 int last_modif(char *path);
-void handle_return_and_free(enum error val, char **rules, struct Node_rule **nodes);
+void handle_return(enum error val);
 void free_resources(char **rules, struct Node_rule **nodes);
 
 #endif
