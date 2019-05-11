@@ -1,4 +1,4 @@
-all: a b
+all: b a
 	echo all
 
 a:

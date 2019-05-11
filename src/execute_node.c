@@ -105,6 +105,7 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
     }
     return NULL;
 }
+
 /*
 void execute_all_dep(struct Node_rule *rule,int parent)
 {
@@ -126,6 +127,7 @@ void execute_all_dep(struct Node_rule *rule,int parent)
     }
 }
 */
+
 void exec_list(char **rules, struct Node_rule **nodes, int parent)
 {
     parent = parent;

@@ -9,7 +9,5 @@
 
 void execute_node(struct Node_rule* n);
 void exec_list(char **rules, struct Node_rule **nodes, int parent);
-//void execute_all_dep(char *target, char **depend, struct Node_rule **nodes
-//                        ,int parent);
 
 #endif
