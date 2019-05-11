@@ -8,8 +8,8 @@
 #include "parse_rule.h"
 
 void execute_node(struct Node_rule* n);
-void exec_all_rules(char **rules, struct Node_rule **nodes);
-void execute_all_dep(char *target, char **depend, struct Node_rule **nodes
-                        ,int parent);
+void exec_list(char **rules, struct Node_rule **nodes, int parent);
+//void execute_all_dep(char *target, char **depend, struct Node_rule **nodes
+//                        ,int parent);
 
 #endif

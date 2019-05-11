@@ -105,8 +105,8 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
     }
     return NULL;
 }
-void execute_all_dep(char *target, char **depend, struct Node_rule **nodes
-                       ,int parent)
+/*
+void execute_all_dep(struct Node_rule *rule,int parent)
 {
     //char targettime[100] = "";
     struct tm *tm = last_modif(target);
@@ -125,12 +125,14 @@ void execute_all_dep(char *target, char **depend, struct Node_rule **nodes
         exec_all_rules(depend, nodes);
     }
 }
-
-void exec_all_rules(char **rules, struct Node_rule **nodes)
+*/
+void exec_list(char **rules, struct Node_rule **nodes, int parent)
 {
+    parent = parent;
     if(!rules[0])
     {
-        execute_all_dep(nodes[0]->target , nodes[0]->depend, nodes, 1);
+        if(strcmp(nodes[0]->depend[0], "") != 0)
+            exec_list(nodes[0]->depend, nodes, 1);
         execute_node(nodes[0]);
         return;
     }
@@ -139,7 +141,8 @@ void exec_all_rules(char **rules, struct Node_rule **nodes)
         struct Node_rule *tmp = find_node(rules[i], nodes);
         if(tmp)
         {
-            execute_all_dep(tmp->target , tmp->depend, nodes, 1);
+            if(strcmp(tmp->depend[0], "") != 0)
+                exec_list(tmp->depend, nodes, 0);
             execute_node(tmp);
         }
         else

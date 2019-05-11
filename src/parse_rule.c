@@ -33,6 +33,8 @@ static char **split_depend(char *depend)
         count++;
         token = strtok(NULL, " ");
     }
+    size_t len = strlen(res[count-1])-1;
+    res[count-1][len] = '\0';            /* removing last \n */
     res[count] = NULL;
     return res;
 }
