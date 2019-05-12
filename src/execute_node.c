@@ -45,12 +45,12 @@ static char *add_start(char *a, char b)
 
 error execute_node(struct Node_rule *n, char *parent)
 {
+    parent = parent;
     int dontprint;
     char **commands = n->recipe;
     if(commands[0] == NULL)
     {
-        printf("minimake: Nothing to be done for '%s'.\n", parent);
-        return NoError;
+        return NoCommand;
     }
     for(int i = 0; *(commands+i) != NULL; i++)
     {
@@ -107,10 +107,10 @@ static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,
 {
     int returnval = 0;
     if(strcmp(rule->depend[0], "") != 0)
-        returnval = exec_list(rule->depend, nodes, parent);
-    if(returnval != 0)
+        returnval = handler(returnval, exec_list(rule->depend, nodes, parent));
+    if(returnval > 2)
         return returnval;
-    return execute_node(rule, parent);
+    return handler(returnval,execute_node(rule, parent));
 }
 
 error exec_list(char **rules, struct Node_rule **nodes, char *parent)
@@ -120,9 +120,9 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
     {
         if(parent == NULL)
             parent = nodes[0]->target;
-        return exec_rule(nodes[0], nodes, parent);
+        return handler(returnval,exec_rule(nodes[0], nodes, parent));
     }
-    for(int i =0 ; *(i+rules) != NULL && returnval == NoError; i++)
+    for(int i =0 ; *(i+rules) != NULL && (returnval <= 2 ); i++)
     {
         if(!rule_exist(rules, rules[i], i))
         {
@@ -131,7 +131,7 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
             {
                 if(parent == NULL)
                     parent = rules[i];
-                returnval = exec_rule(tmp, nodes, parent);
+                returnval = handler(returnval,exec_rule(tmp, nodes, parent));
             }
             else
             {
@@ -141,7 +141,11 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
         }
         else
         {
-            printf("minimake: '%s' is up to date.\n", rules[i]);
+            fprintf(stdout, "minimake: '%s' is up to date.\n", rules[i]);
+        }
+        if(returnval == NoCommand && parent == rules[i])
+        {
+            fprintf(stdout, "minimake: Nothing to be done for '%s'.\n", parent);
         }
     }
     return returnval;

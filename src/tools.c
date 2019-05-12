@@ -79,6 +79,22 @@ void free_resources(char **rules, struct Node_rule **nodes)
     free_string(rules);
 }
 
+enum error handler(enum error val1, enum error val2)
+{
+    if(val1 > 2)
+        return val1;
+    else if(val2 > 2)
+        return val2;
+    else if(val1 == 0)
+        return val2;
+    else if(val2 == 0)
+        return val1;
+    else if(val1 == 2 && val2 == 2)
+        return NoCommand;
+    else
+        return NoError;
+}
+
 void handle_return(enum error val)
 {
     switch(val)
@@ -103,6 +119,10 @@ void handle_return(enum error val)
             exit(2);
         }
         case NoError:
+        {
+            exit(0);
+        }
+        case NoCommand:
         {
             exit(0);
         }

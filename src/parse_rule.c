@@ -84,7 +84,7 @@ static char **split_commands(FILE *input)
 
     while((read = getline(&buffer, &len, input)) != -1)
     {
-        if(buffer[0] == '\t' || comment(buffer))
+        if(buffer[0] == '\t')
         {
             if(justws(buffer))
                 continue;
@@ -94,6 +94,8 @@ static char **split_commands(FILE *input)
             res = realloc(res, (count) * sizeof(char*));
             res[count-1] = NULL;
         }
+        else if(comment(buffer))
+            continue;
         else
         {
             disgusting(buffer, input);
