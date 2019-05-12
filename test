@@ -1,13 +1,4 @@
-all:
-	echo all
-	    echo hi
-foo: bar
-	echo foo
-
 bar: baz
-
+	
 baz:
-
-comment:
-	echo a line # with a comment
-	#just a comment
+	echo baz

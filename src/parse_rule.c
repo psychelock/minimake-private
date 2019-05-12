@@ -51,6 +51,7 @@ static char **split_commands(FILE *input)
 {
     int count = 1;
     char **res = (char**)malloc(sizeof(char*));
+    res[0]=NULL;
     char *buffer= NULL;
     size_t len  = 0;
     ssize_t read;
@@ -129,4 +130,3 @@ void free_all_nodes(struct Node_rule **n)
     }
     free(n);
 }
-
