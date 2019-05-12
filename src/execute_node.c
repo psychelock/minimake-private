@@ -43,14 +43,14 @@ static char *add_start(char *a, char b)
     return res;
 }
 
-error execute_node(struct Node_rule *n)
+error execute_node(struct Node_rule *n, char *parent)
 {
     int dontprint;
     char **commands = n->recipe;
     if(commands[0] == NULL)
     {
-        printf("minimake: Nothing to be done for '%s'.\n", n->target);
-        return NoError; /*FIXME add parent */
+        printf("minimake: Nothing to be done for '%s'.\n", parent);
+        return NoError;
     }
     for(int i = 0; *(commands+i) != NULL; i++)
     {
@@ -102,22 +102,25 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
     return NULL;
 }
 
-static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes)
+static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,
+                            char *parent)
 {
     int returnval = 0;
     if(strcmp(rule->depend[0], "") != 0)
-        returnval = exec_list(rule->depend, nodes);
+        returnval = exec_list(rule->depend, nodes, parent);
     if(returnval != 0)
         return returnval;
-    return execute_node(rule);
+    return execute_node(rule, parent);
 }
 
-error exec_list(char **rules, struct Node_rule **nodes)
+error exec_list(char **rules, struct Node_rule **nodes, char *parent)
 {
     int returnval = 0;
     if(!rules[0])
     {
-        return exec_rule(nodes[0], nodes);
+        if(parent == NULL)
+            parent = nodes[0]->target;
+        return exec_rule(nodes[0], nodes, parent);
     }
     for(int i =0 ; *(i+rules) != NULL && returnval == NoError; i++)
     {
@@ -126,7 +129,9 @@ error exec_list(char **rules, struct Node_rule **nodes)
             struct Node_rule *tmp = find_node(rules[i], nodes);
             if(tmp)
             {
-                returnval = exec_rule(tmp, nodes);
+                if(parent == NULL)
+                    parent = rules[i];
+                returnval = exec_rule(tmp, nodes, parent);
             }
             else
             {

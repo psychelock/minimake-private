@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
         fprintf(stderr, "minimake: no target to build");
         exit(2);
     }
-    enum error returnval = exec_list( rules, nodes);
+    enum error returnval = exec_list( rules, nodes, NULL);
     free_resources(rules, nodes);
     handle_return(returnval);
     return 0;

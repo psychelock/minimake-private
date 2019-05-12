@@ -47,6 +47,18 @@ static void disgusting(char *string, FILE *input)
     }
 }
 
+static int justws(char *buffer)
+{
+    for(size_t i =0; i < strlen(buffer); i++)
+    {
+        if(buffer[i]=='\t' || buffer[i]== ' ' || buffer[i] == '\n')
+            continue;
+        return 0;
+
+    }
+    return 1;
+}
+
 static char **split_commands(FILE *input)
 {
     int count = 1;
@@ -58,9 +70,9 @@ static char **split_commands(FILE *input)
 
     while((read = getline(&buffer, &len, input)) != -1)
     {
-        if(buffer[0] == 9 || buffer[0] == '#' || buffer[0] == '\n')
+        if(buffer[0] == '\t' || buffer[0] == '#')
         {
-            if(buffer[0] == '\n')
+            if(justws(buffer))
                 continue;
             res[count-1] = (char*)malloc(255*sizeof(char));
             strcpy(res[count-1], buffer);
