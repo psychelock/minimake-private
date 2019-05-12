@@ -59,6 +59,20 @@ static int justws(char *buffer)
     return 1;
 }
 
+static int comment(char *buffer)
+{
+    for(size_t i = 0; i < strlen(buffer); i++)
+    {
+        if(buffer[i]=='\t' || buffer[i]==' ' || buffer[i] =='\n')
+            continue;
+        if(buffer[i] == '#')
+            return 1;
+        else
+            return 0;
+    }
+    return 0;
+}
+
 static char **split_commands(FILE *input)
 {
     int count = 1;
@@ -70,7 +84,7 @@ static char **split_commands(FILE *input)
 
     while((read = getline(&buffer, &len, input)) != -1)
     {
-        if(buffer[0] == '\t' || buffer[0] == '#')
+        if(buffer[0] == '\t' || comment(buffer))
         {
             if(justws(buffer))
                 continue;
