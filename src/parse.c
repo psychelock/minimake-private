@@ -1,13 +1,22 @@
 #include "parse.h"
 #include "parse_rule.h"
+#include "parse_var.h"
 #include "execute_node.h"
 
-struct Node_rule **parse_makefile(FILE *input)
+struct AllNodes *parse_makefile(FILE *input)
 {
     int node_count = 1;
-    struct Node_rule **res = \
+    int var_count = 1;
+
+    struct AllNodes *res = (struct AllNodes*) malloc (sizeof(struct AllNodes));
+    struct Node_rule **nodes = \
                     (struct Node_rule**) malloc (sizeof(struct Node_rule*));
-    res[0] = NULL;
+    struct Node_var **vars = \
+                    (struct Node_var**) malloc(sizeof(struct Node_var*));
+    nodes[0] = NULL;
+    vars[0] = NULL;
+
+
     char *line = NULL;
     size_t len  = 0;
     ssize_t read;
@@ -16,15 +25,25 @@ struct Node_rule **parse_makefile(FILE *input)
         if((strchr(line, ':')) != NULL)
         {
             struct Node_rule *tmp = create_node_rule(line, input);
-            res[node_count-1] = tmp;
+            nodes[node_count-1] = tmp;
             node_count++;
-            res = realloc(res, (node_count) * sizeof(struct Node_rule*));
-            res[node_count-1] = NULL;
+            nodes = realloc(nodes, (node_count) * sizeof(struct Node_rule*));
+            nodes[node_count-1] = NULL;
+        }
+        else if((strchr(line, '=')) != NULL)
+        {
+            struct Node_var *tmp = create_node_var(line);
+            vars[var_count-1] = tmp;
+            var_count++;
+            vars = realloc(nodes, (var_count) * sizeof(struct Node_var*));
+            vars[var_count-1] = NULL;
         }
     }
     if(line)
         free(line);
     fclose(input);
+    res->nodes = nodes;
+    res->vars= vars;
     return res;
 }
 

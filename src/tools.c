@@ -84,9 +84,11 @@ int file_exist(char *path)
     return 0;
 }
 
-void free_resources(char **rules, struct Node_rule **nodes)
+void free_resources(char **rules, struct AllNodes *allnodes)
 {
-    free_all_nodes(nodes);
+    free_all_node_var(allnodes->vars);
+    free_all_nodes(allnodes->nodes);
+    free(allnodes);
     free_string(rules);
 }
 

@@ -10,7 +10,7 @@
 int main (int argc, char *argv[])
 {
     char **rules;
-    struct Node_rule **nodes;
+    struct AllNodes *allnodes;
     if(find_option(argv, argc, 'h') != -1)
     {
         dump_help();
@@ -36,14 +36,14 @@ int main (int argc, char *argv[])
     }
     rules = find_rules(argv, argc-1);
     if(file != NULL)
-        nodes = parse_makefile(file);
-    if(!nodes[0])
+        allnodes = parse_makefile(file);
+    if(!allnodes->nodes[0])
     {
         fprintf(stderr, "minimake: no target to build\n");
         exit(2);
     }
-    enum error returnval = exec_list( rules, nodes, NULL);
-    free_resources(rules, nodes);
+    enum error returnval = exec_list( rules, allnodes->nodes, NULL);
+    free_resources(rules, allnodes);
     handle_return(returnval);
     return 0;
 }

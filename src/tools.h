@@ -8,9 +8,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "parse.h"
 #include "options.h"
 #include "parse_rule.h"
+#include "parse_var.h"
+
 struct Node_rule;
+struct AllNodes;
 
 typedef enum error
 {
@@ -31,6 +35,6 @@ int last_modif(char *path);
 void handle_return(enum error val);
 enum error handler(enum error val1, enum error val2);
 int file_exist(char *path);
-void free_resources(char **rules, struct Node_rule **nodes);
+void free_resources(char **rules, struct AllNodes *allnodes);
 
 #endif
