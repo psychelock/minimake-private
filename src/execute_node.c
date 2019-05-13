@@ -136,6 +136,8 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
                 {
                     returnval = handler(returnval,exec_rule(tmp, nodes));
                 }
+                else if (file_exist(rules[i]))
+                    continue;
                 else
                 {
                     fprintf(stderr,"minimake: no rule to make target '%s'\n",rules[i]);

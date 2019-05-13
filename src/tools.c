@@ -73,6 +73,17 @@ int last_modif(char *path)
         return 0;
 }
 
+int file_exist(char *path)
+{
+    FILE *file;
+    if((file = fopen(path, "r")))
+    {
+        fclose(file);
+        return 1;
+    }
+    return 0;
+}
+
 void free_resources(char **rules, struct Node_rule **nodes)
 {
     free_all_nodes(nodes);

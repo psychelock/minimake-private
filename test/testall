@@ -39,3 +39,4 @@ printf "${CYAN}---Up to date 2---\n ${NC}"
 touch all
 ./minimake all -f test/test4
 rm all
+
