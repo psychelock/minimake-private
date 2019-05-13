@@ -2,14 +2,22 @@
 
 struct Node_var *create_node_var(char *line)
 {
-    if(*line == ':')
+    if(*line == '=')
+    {
         parse_error("Variable", "Empty variable name");
+        return NULL;
+    }
     char *lhs= strtok(line, "=");
-    char *name= (char *)malloc(sizeof(char *));
+    if(strchr(lhs, ' ') != NULL)
+    {
+        parse_error("Variable", "Variable name split");
+        return NULL;
+    }
+    char *name= (char *)malloc(50*sizeof(char));
     strcpy(name, lhs);
 
     char *rhs= strtok(NULL, "=");
-    char *value= (char *)malloc(sizeof(char *));
+    char *value= (char *)malloc(255 *sizeof(char));
     strcpy(value, rhs);
 
     struct Node_var *res = (struct Node_var*) malloc (sizeof(struct Node_var));

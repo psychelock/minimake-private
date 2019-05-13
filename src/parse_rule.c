@@ -73,6 +73,28 @@ static int comment(char *buffer)
     return 0;
 }
 
+static int handle_var_error(char *line)
+{
+    int startbra = 0;
+    int startcurly = 0;
+    size_t len = strlen(line);
+    for(size_t i = 0; i < len-1; i++)
+    {
+        if(line[i] == '$')
+        {
+            if (line[i+1] == '(' && startbra == 0)
+                startbra = 1;
+            else if (line[i+1] == '{' && startcurly == 0)
+                startcurly = 1;
+        }
+        if(startbra == 1 && line[i] == ')')
+            startbra = 0;
+        if(startcurly == 1 && line[i] == '}')
+            startcurly = 0;
+    }
+    return (startbra || startcurly);
+}
+
 static char **split_commands(FILE *input)
 {
     int count = 1;
@@ -88,6 +110,13 @@ static char **split_commands(FILE *input)
         {
             if(justws(buffer))
                 continue;
+            if(handle_var_error(buffer))
+            {
+                parse_error("Variable", "Syntax error");
+                free_string(res);
+                free(buffer);
+                return NULL;
+            }
             res[count-1] = (char*)malloc(255*sizeof(char));
             strcpy(res[count-1], buffer);
             count++;
@@ -109,16 +138,29 @@ static char **split_commands(FILE *input)
 struct Node_rule* create_node_rule (char *line1, FILE *input)
 {
     if(*line1 == ':')
+    {
         parse_error("Target", "Empty target");
+        return NULL;
+    }
     char *target= strtok(line1, ":");
-    char *rule = (char *)malloc(sizeof(char *));
-    strcpy(rule, target);
 
     if(strchr(target, ' ') != NULL)
+    {
         parse_error("Target", "Multiple targets");
+        return NULL;
+    }
+    
+    char *rule = (char *)malloc(50 * sizeof(char));
+    strcpy(rule, target);
     char *depend= strtok(NULL, ":");
 
     char **recipe = split_commands(input);
+    
+    if(!recipe)
+    {
+        free(rule);
+        return NULL;
+    }
 
     struct Node_rule *res = (struct Node_rule*)malloc(sizeof(struct Node_rule));
     res->target = rule;

@@ -1,3 +1,4 @@
-VAR = lol
+VAR lol=var
+TMP = tmp
 all:
-	echo hi
+	echo $(VAR) $(TMP} $

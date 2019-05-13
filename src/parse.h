@@ -11,6 +11,7 @@ struct AllNodes
 {
     struct Node_rule **nodes;
     struct Node_var **vars;
+    int error;
 };
 
 struct AllNodes *parse_makefile(FILE *input);

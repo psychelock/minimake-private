@@ -37,6 +37,12 @@ int main (int argc, char *argv[])
     rules = find_rules(argv, argc-1);
     if(file != NULL)
         allnodes = parse_makefile(file);
+    if(allnodes->error)
+    {
+        free_resources(rules, allnodes);
+        exit(1);
+    }
+
     if(!allnodes->nodes[0])
     {
         fprintf(stderr, "minimake: no target to build\n");

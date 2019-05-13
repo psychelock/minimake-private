@@ -5,6 +5,7 @@
 
 struct AllNodes *parse_makefile(FILE *input)
 {
+    int error = 0;
     int node_count = 1;
     int var_count = 1;
 
@@ -16,7 +17,6 @@ struct AllNodes *parse_makefile(FILE *input)
     nodes[0] = NULL;
     vars[0] = NULL;
 
-
     char *line = NULL;
     size_t len  = 0;
     ssize_t read;
@@ -24,18 +24,28 @@ struct AllNodes *parse_makefile(FILE *input)
     {
         if((strchr(line, ':')) != NULL)
         {
-            struct Node_rule *tmp = create_node_rule(line, input);
-            nodes[node_count-1] = tmp;
+            struct Node_rule *tmp_rule = create_node_rule(line, input);
+            if(!tmp_rule)
+            {
+                error =1;
+                break;
+            }
+            nodes[node_count-1] = tmp_rule;
             node_count++;
             nodes = realloc(nodes, (node_count) * sizeof(struct Node_rule*));
             nodes[node_count-1] = NULL;
         }
         else if((strchr(line, '=')) != NULL)
         {
-            struct Node_var *tmp = create_node_var(line);
-            vars[var_count-1] = tmp;
+            struct Node_var *tmp_var = create_node_var(line);
+            if(!tmp_var)
+            {
+                error = 1;
+                break;
+            }
+            vars[var_count-1] = tmp_var;
             var_count++;
-            vars = realloc(nodes, (var_count) * sizeof(struct Node_var*));
+            vars = realloc(vars, (var_count) * sizeof(struct Node_var*));
             vars[var_count-1] = NULL;
         }
     }
@@ -44,11 +54,11 @@ struct AllNodes *parse_makefile(FILE *input)
     fclose(input);
     res->nodes = nodes;
     res->vars= vars;
+    res->error = error;
     return res;
 }
 
 void parse_error(char *err, char *msg)
 {
     fprintf(stderr, "Error in %s, %s\n", err, msg);
-    exit(1);
 }
