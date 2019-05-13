@@ -1,0 +1,41 @@
+#!/bin/sh
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+printf "${CYAN}---Test 1---\n${NC}"
+printf "${CYAN}---no target to build---\n ${NC}"
+./minimake -f test/test1
+
+printf "${CYAN}---Test 2---\n${NC}"
+printf "${CYAN}---no rule to make target 'toto'---\n ${NC}"
+./minimake toto -f test/test2
+
+printf "${CYAN}---Test 3---\n${NC}"
+printf "${CYAN}---Comments---\n ${NC}"
+./minimake -f test/test2
+
+printf "${CYAN}---Test 4---\n${NC}"
+printf "${CYAN}---Omit command---\n ${NC}"
+./minimake commands -f test/test2
+
+printf "${CYAN}---Test 5---\n${NC}"
+printf "${CYAN}---same rules more than once---\n ${NC}"
+./minimake all all all -f test/test2
+
+printf "${CYAN}---Test 6---\n${NC}"
+printf "${CYAN}---Nothing to be done for 'target'---\n ${NC}"
+./minimake nothing -f test/test2
+
+printf "${CYAN}---Test 7---\n${NC}"
+printf "${CYAN}---Up to date 1---\n ${NC}"
+./minimake -f test/test3
+./minimake bar -f test/test3
+
+printf "${CYAN}---Test 8---\n${NC}"
+printf "${CYAN}---Up to date 2---\n ${NC}"
+./minimake all -f test/test4
+touch all
+./minimake all -f test/test4
+rm all

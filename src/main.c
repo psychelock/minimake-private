@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
         nodes = parse_makefile(file);
     if(!nodes[0])
     {
-        fprintf(stderr, "minimake: no target to build");
+        fprintf(stderr, "minimake: no target to build\n");
         exit(2);
     }
     enum error returnval = exec_list( rules, nodes, NULL);

@@ -4,10 +4,13 @@ SRC=${wildcard src/*.c}
 OBJS=${SRC:.c=.o}
 EXEC=minimake
 
-.PHONY: all clean
+.PHONY: all clean check
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS)
+
+check:
+	test/testall
 
 clean:
 	$(RM) $(OBJS) $(EXEC)

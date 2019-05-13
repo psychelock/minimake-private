@@ -1,5 +1,5 @@
 all: foo
-	
+
 foo:
 	echo foo
 

@@ -1,0 +1,8 @@
+all:
+	echo a line # with a comment
+	#just a comment
+
+commands:
+	@echo just the result
+
+nothing:
