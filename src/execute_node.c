@@ -43,9 +43,8 @@ static char *add_start(char *a, char b)
     return res;
 }
 
-error execute_node(struct Node_rule *n, char *parent)
+error execute_node(struct Node_rule *n)
 {
-    parent = parent;
     int dontprint;
     char **commands = n->recipe;
     if(commands[0] == NULL)
@@ -102,15 +101,16 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
     return NULL;
 }
 
-static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,
-                            char *parent)
+static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes)
 {
     int returnval = 0;
     if(strcmp(rule->depend[0], "") != 0)
-        returnval = handler(returnval, exec_list(rule->depend, nodes, parent));
+        returnval = handler(returnval, exec_list(rule->depend, nodes, rule->target));
     if(returnval > 2)
         return returnval;
-    return handler(returnval,execute_node(rule, parent));
+    if(last_modif(rule->target) == 0)
+        return handler(returnval,execute_node(rule));
+    return returnval;
 }
 
 error exec_list(char **rules, struct Node_rule **nodes, char *parent)
@@ -120,28 +120,35 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
     {
         if(parent == NULL)
             parent = nodes[0]->target;
-        return handler(returnval,exec_rule(nodes[0], nodes, parent));
+        return handler(returnval,exec_rule(nodes[0], nodes));
     }
+    int exist = 0;
     for(int i =0 ; *(i+rules) != NULL && (returnval <= 2 ); i++)
     {
-        if(!rule_exist(rules, rules[i], i))
+        if(parent == NULL)
+            parent = rules[i];
+        if(last_modif(rules[i]) >= last_modif(parent) || last_modif(rules[i]) == 0)
         {
-            struct Node_rule *tmp = find_node(rules[i], nodes);
-            if(tmp)
+            if(!rule_exist(rules, rules[i], i))
             {
-                if(parent == NULL)
-                    parent = rules[i];
-                returnval = handler(returnval,exec_rule(tmp, nodes, parent));
+                struct Node_rule *tmp = find_node(rules[i], nodes);
+                if(tmp)
+                {
+                    returnval = handler(returnval,exec_rule(tmp, nodes));
+                }
+                else
+                {
+                    fprintf(stderr,"minimake: no rule to make target '%s'\n",rules[i]);
+                    return NoRule;
+                }
             }
             else
-            {
-                fprintf(stderr,"minimake: no rule to make target '%s'\n",rules[i]);
-                return NoRule;
-            }
+                exist = 1;
         }
-        else
+        if(exist || returnval == 0)
         {
             fprintf(stdout, "minimake: '%s' is up to date.\n", rules[i]);
+            returnval = 1;
         }
         if(returnval == NoCommand && parent == rules[i])
         {
