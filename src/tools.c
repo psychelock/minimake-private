@@ -146,3 +146,25 @@ void handle_return(enum error val)
         }
     }
 }
+
+int handle_var_error(char *line)
+{
+    int startbra = 0;
+    int startcurly = 0;
+    size_t len = strlen(line);
+    for(size_t i = 0; i < len-1; i++)
+    {
+        if(line[i] == '$')
+        {
+            if (line[i+1] == '(' && startbra == 0)
+                startbra = 1;
+            else if (line[i+1] == '{' && startcurly == 0)
+                startcurly = 1;
+        }
+        if(startbra == 1 && line[i] == ')')
+            startbra = 0;
+        if(startcurly == 1 && line[i] == '}')
+            startcurly = 0;
+    }
+    return (startbra || startcurly);
+}

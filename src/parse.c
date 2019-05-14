@@ -22,9 +22,15 @@ struct AllNodes *parse_makefile(FILE *input)
     ssize_t read;
     while((read = getline(&line, &len, input)) != -1)
     {
+        if(handle_var_error(line))
+        {
+            parse_error("Variable", "Syntax error");
+            error = 1;
+            break;
+        }
         if((strchr(line, ':')) != NULL)
         {
-            struct Node_rule *tmp_rule = create_node_rule(line, input);
+            struct Node_rule *tmp_rule = create_node_rule(line, input, vars);
             if(!tmp_rule)
             {
                 error =1;
@@ -48,6 +54,8 @@ struct AllNodes *parse_makefile(FILE *input)
             vars = realloc(vars, (var_count) * sizeof(struct Node_var*));
             vars[var_count-1] = NULL;
         }
+        res->nodes = nodes;
+        res->vars= vars;
     }
     if(line)
         free(line);

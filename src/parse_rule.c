@@ -1,6 +1,6 @@
 #include "parse_rule.h"
 
-int words(const char *sentence)
+static int words(const char *sentence)
 {
     int count=0,i,len;
     char lastC;
@@ -18,6 +18,18 @@ int words(const char *sentence)
         lastC = sentence[i];
     }
     return count;
+}
+
+static void move_depend(char **tmp, int i)
+{
+    if(!tmp)
+        return;
+    for(; tmp[i+1]; i++)
+    {
+        strcpy(tmp[i], tmp[i+1]);
+    }
+    tmp[i] = NULL;
+    free(tmp[i]);
 }
 
 static char **split_depend(char *depend)
@@ -73,28 +85,6 @@ static int comment(char *buffer)
     return 0;
 }
 
-static int handle_var_error(char *line)
-{
-    int startbra = 0;
-    int startcurly = 0;
-    size_t len = strlen(line);
-    for(size_t i = 0; i < len-1; i++)
-    {
-        if(line[i] == '$')
-        {
-            if (line[i+1] == '(' && startbra == 0)
-                startbra = 1;
-            else if (line[i+1] == '{' && startcurly == 0)
-                startcurly = 1;
-        }
-        if(startbra == 1 && line[i] == ')')
-            startbra = 0;
-        if(startcurly == 1 && line[i] == '}')
-            startcurly = 0;
-    }
-    return (startbra || startcurly);
-}
-
 static char **split_commands(FILE *input)
 {
     int count = 1;
@@ -135,36 +125,116 @@ static char **split_commands(FILE *input)
     return res;
 }
 
-struct Node_rule* create_node_rule (char *line1, FILE *input)
+char *remove_back_ws(char *string)
+{
+    int len = strlen(string)-1;
+    for(int i = len;i >=0; i--)
+    {
+        if(string[i] == '\t' || string[i] == ' ')
+            string[i] = '\0';
+        else
+            break;
+    }
+    return string;
+}
+
+static void extract_var(char *res, char delim, char *string, int start)
+{
+    for(int i = start; string[i] != delim && string[i+1]; i++)
+    {
+        res[i] = string[i];
+    }
+}
+
+static void find_and_replace(char *dest, char *string, struct Node_var **vars)
+{
+    int spaces = 3;
+    char variable[255] = "\0";
+    if(*(string+1) == '(')
+        extract_var(variable, ')', string+2, 0);
+    else if(*(string+1) == '{')
+        extract_var(variable, '}', string+2, 0);
+    else
+    {
+        spaces = 2;
+        variable[0] = *(string+1);
+    }
+    struct Node_var *tmp = find_node_var(variable,vars);
+    if(tmp)
+    {
+        spaces += strlen(variable);
+        strcat(dest,tmp->value);
+        strcat(dest, string+spaces);
+    }
+    else
+    {
+        strcat(dest, string+strlen(variable)+spaces );
+    }
+}
+
+
+static void change_var_depend(char **depend, struct Node_var **vars)
+{
+    char variable[255];
+    if(!depend)
+        return;
+    for(int i =0; depend[i]; i++)
+    {
+        if(strchr(depend[i], '$') != NULL)
+        {
+            if(*(depend[i]+1) == '(')
+                extract_var(variable, ')', depend[i]+2, 0);
+            else if(*(depend[i]+1) == '{')
+                extract_var(variable, '}', depend[i]+2, 0);
+            else
+                variable[0] = *(depend[i]+1);
+            struct Node_var* tmp = find_node_var(variable, vars);
+            if(tmp)
+                strcpy(depend[i], tmp->value);
+            else
+                move_depend(depend, i);
+        }
+    }
+}
+
+struct Node_rule* create_node_rule (char *line1, FILE *input, struct Node_var ** vars)
 {
     if(*line1 == ':')
     {
         parse_error("Target", "Empty target");
         return NULL;
     }
-    char *target= strtok(line1, ":");
+
+    char *target= remove_front_ws(remove_back_ws(strtok(line1, ":")));
 
     if(strchr(target, ' ') != NULL)
     {
         parse_error("Target", "Multiple targets");
         return NULL;
     }
-    
-    char *rule = (char *)malloc(50 * sizeof(char));
-    strcpy(rule, target);
-    char *depend= strtok(NULL, ":");
 
+    char *rule = (char *)calloc(50,sizeof(char));
+
+    char *replacement = strchr(target, '$');
+    if(replacement)
+        find_and_replace(rule, replacement, vars);
+    else
+        strcpy(rule, target);
+
+    char *depend= strtok(NULL, ":");
+    char **alldepend = split_depend(depend);
+    change_var_depend(alldepend, vars);
     char **recipe = split_commands(input);
-    
+
     if(!recipe)
     {
-        free(rule);
+        free(target);
         return NULL;
     }
 
     struct Node_rule *res = (struct Node_rule*)malloc(sizeof(struct Node_rule));
     res->target = rule;
-    res->depend = split_depend(depend);
+    res->depend = alldepend;
     res->recipe = recipe;
     return res;
 }

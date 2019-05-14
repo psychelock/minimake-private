@@ -46,6 +46,7 @@ int main (int argc, char *argv[])
     if(!allnodes->nodes[0])
     {
         fprintf(stderr, "minimake: no target to build\n");
+        free_resources(rules, allnodes);
         exit(2);
     }
     enum error returnval = exec_list( rules, allnodes->nodes, NULL);

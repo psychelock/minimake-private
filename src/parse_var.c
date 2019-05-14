@@ -1,5 +1,17 @@
 #include "parse_var.h"
 
+char *remove_front_ws(char *string)
+{
+    int i = 0;
+    for(; string[i]; i++)
+    {
+        if(string[i] == ' ' || string[i] == '\t')
+            continue;
+        break;
+    }
+    return string+i;
+}
+
 struct Node_var *create_node_var(char *line)
 {
     if(*line == '=')
@@ -8,6 +20,10 @@ struct Node_var *create_node_var(char *line)
         return NULL;
     }
     char *lhs= strtok(line, "=");
+
+    lhs = remove_front_ws(lhs);
+    lhs = remove_back_ws(lhs);
+
     if(strchr(lhs, ' ') != NULL)
     {
         parse_error("Variable", "Variable name split");
@@ -18,7 +34,8 @@ struct Node_var *create_node_var(char *line)
 
     char *rhs= strtok(NULL, "=");
     char *value= (char *)malloc(255 *sizeof(char));
-    strcpy(value, rhs);
+    strcpy(value, remove_front_ws(rhs));
+    value[strlen(value)-1]='\0';
 
     struct Node_var *res = (struct Node_var*) malloc (sizeof(struct Node_var));
     res->name = name;
@@ -47,4 +64,16 @@ void free_all_node_var(struct Node_var **vars)
         free_node_var(vars[i]);
     }
     free(vars);
+}
+
+struct Node_var *find_node_var(char *name, struct Node_var **vars)
+{
+    if(!vars)
+        return NULL;
+    for(int i = 0 ; vars[i] != NULL; i++)
+    {
+        if(strcmp(vars[i]->name,name) == 0)
+            return vars[i];
+    }
+    return NULL;
 }
