@@ -29,7 +29,7 @@ struct Node_var *create_node_var(char *line)
         parse_error("Variable", "Variable name split");
         return NULL;
     }
-    char *name= (char *)malloc(50*sizeof(char));
+    char *name= (char *)calloc(50,sizeof(char));
     strcpy(name, lhs);
 
     char *rhs= strtok(NULL, "=");

@@ -28,7 +28,7 @@ static void move_depend(char **tmp, int i)
     {
         strcpy(tmp[i], tmp[i+1]);
     }
-    tmp[i] = NULL;
+    //tmp[i] = NULL;
     free(tmp[i]);
 }
 
