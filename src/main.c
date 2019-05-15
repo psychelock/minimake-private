@@ -40,7 +40,7 @@ int main (int argc, char *argv[])
     if(allnodes->error)
     {
         free_resources(rules, allnodes);
-        exit(1);
+        exit(2);
     }
 
     if(!allnodes->nodes[0])

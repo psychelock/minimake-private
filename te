@@ -1,9 +1,3 @@
-lol= var
-TMP= tmp
-all: $(lol) $(TMP)
-
-var:
-	echo hi
-
-tmp:
-	echo hi
+all:
+	echo $(FILE)
+FILE =		foo bar

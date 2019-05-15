@@ -19,40 +19,59 @@ static char *strip_ws(char *a)
     return res;
 }
 
-static char *remove_start(char *a, char b)
+static void extract_var(char *res, char delim, char *string, int start)
 {
-    char *res = (char *) malloc (255 * sizeof(char));
-    if(a[0] == b)
+    for(int i = start; string[i] != delim && string[i+1]; i++)
     {
-        strcpy(res, (a+1));
-        if(a != NULL)
-            free(a);
-        return res;
+        res[i] = string[i];
     }
-    free(res);
-    return a;
 }
 
-static char *add_start(char *a, char b)
+static void find_and_replace(char *res, char *string, struct Node_var **vars)
 {
-    char *res = (char *)malloc(255 * sizeof(char));
-    res[0] = b;
-    strcpy(res+1, a);
-    if(a)
-        free (a);
-    return res;
+    int i =0;
+    if(string[0] == '@')
+        i++;
+    int count = 0;
+    int spaces = 3;
+    char variable[255] = "";
+    for(; string[i] != '\0'; i++)
+    {
+        if(string[i] == '$')
+        {
+            if(string[i+1] == '(')
+                extract_var(variable,')',string+i+2, 0);
+            else if(string[i+1] == '{')
+                extract_var(variable,'}',string+i+2, 0);
+            else
+            {
+                spaces = 2;
+                variable[0] = string[i+1];
+            }
+            struct  Node_var *tmp = find_node_var(variable, vars);
+            if(tmp)
+            {
+                strcat(res, tmp->value);
+                count += strlen(tmp->value);
+            }
+            else
+            {
+                strcat(res, "");
+            }
+            i += strlen(variable)+spaces-1;
+            empty_string(variable);
+        }
+        else
+        {
+            res[count] = string[i];
+            count++;
+        }
+    }
 }
-
-/*static void find_and_replace(char *string, struct Node_var **vars)
-{
-    if(!vars)
-        return;
-}*/
 
 error execute_node(struct Node_rule *n, struct Node_var **vars)
 {
     vars = vars;
-    int dontprint;
     char **commands = n->recipe;
     if(commands[0] == NULL)
     {
@@ -60,17 +79,12 @@ error execute_node(struct Node_rule *n, struct Node_var **vars)
     }
     for(int i = 0; *(commands+i) != NULL; i++)
     {
-        dontprint = 0;
+        char *res = (char *)calloc(255, sizeof(char));
         if(commands[i] != NULL)
         {
             commands[i] = strip_ws(commands[i]);
-            if(*commands[i] == '@')
-            {
-                dontprint = 1;
-                commands[i] = remove_start(commands[i], '@');
-            }
-            if(!dontprint)
-                printf(commands[i]);
+            find_and_replace(res, commands[i], vars);
+            printf(res);
             fflush(stdout);
 
             pid_t child_pid;
@@ -78,22 +92,26 @@ error execute_node(struct Node_rule *n, struct Node_var **vars)
 
             if((child_pid = fork()) < 0 )
             {
+                free(res);
                 return ExecErrorFork;
             }
             if(child_pid == 0)
             {
-                execl("/bin/sh", "sh", "-c", commands[i], 0);
+                execl("/bin/sh", "sh", "-c", res, 0);
+                free(res);
                 return ExecErrorExecl;
             }
             else
             {
-                if(dontprint)
-                    commands[i] = add_start(commands[i], '@');
                 wait(&status);
                 if(WEXITSTATUS(status) != 0)
+                {
+                    free(res);
                     return ExecError;
+                }
             }
         }
+        free(res);
     }
     return NoError;
 }
@@ -109,12 +127,12 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
 }
 
 static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,\
-                            struct Node_var **vars)
+        struct Node_var **vars)
 {
     int returnval = 0;
     if(strcmp(rule->depend[0], "") != 0)
         returnval = handler(returnval, exec_list(rule->depend, nodes, \
-                            vars, rule->target));
+                    vars, rule->target));
     if(returnval > 2)
         return returnval;
     if(last_modif(rule->target) == 0)
@@ -123,7 +141,7 @@ static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,\
 }
 
 error exec_list(char **rules, struct Node_rule **nodes, \
-                struct Node_var **vars, char *parent)
+        struct Node_var **vars, char *parent)
 {
     int returnval = 0;
     if(!rules[0])

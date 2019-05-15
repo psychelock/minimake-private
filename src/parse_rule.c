@@ -28,7 +28,7 @@ static void move_depend(char **tmp, int i)
     {
         strcpy(tmp[i], tmp[i+1]);
     }
-    tmp[i] = "";
+    empty_string(tmp[i]);
 }
 
 static char **split_depend(char *depend)
@@ -137,7 +137,7 @@ char *remove_back_ws(char *string)
     return string;
 }
 
-void extract_var(char *res, char delim, char *string, int start)
+static void extract_var(char *res, char delim, char *string, int start)
 {
     for(int i = start; string[i] != delim && string[i+1]; i++)
     {
@@ -145,7 +145,7 @@ void extract_var(char *res, char delim, char *string, int start)
     }
 }
 
-void find_and_replace(char *dest, char *string, struct Node_var **vars)
+static void find_and_replace(char *dest, char *string, struct Node_var **vars)
 {
     int spaces = 3;
     char variable[255] = "\0";
@@ -191,7 +191,11 @@ static void change_var_depend(char **depend, struct Node_var **vars)
             if(tmp)
                 strcpy(depend[i], tmp->value);
             else
+            {
                 move_depend(depend, i);
+                i--;
+            }
+            empty_string(variable);
         }
     }
 }

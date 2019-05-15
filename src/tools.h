@@ -37,5 +37,6 @@ enum error handler(enum error val1, enum error val2);
 int file_exist(char *path);
 void free_resources(char **rules, struct AllNodes *allnodes);
 int handle_var_error(char *line);
+void empty_string(char *string);
 
 #endif

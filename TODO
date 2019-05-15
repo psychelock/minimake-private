@@ -1,3 +1,2 @@
 retest main beginning (without -f option)
-execution variable wip
-fix leaks
+1st target not implicit

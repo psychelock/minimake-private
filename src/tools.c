@@ -168,3 +168,13 @@ int handle_var_error(char *line)
     }
     return (startbra || startcurly);
 }
+
+void empty_string(char *string)
+{
+    for(int i = 0 ; string[i] != '\0'; i++)
+    {
+        string[i] = '\0';
+    }
+}
+
+
