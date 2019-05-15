@@ -1,2 +1,3 @@
 retest main beginning (without -f option)
 1st target not implicit
+recursive var wip
