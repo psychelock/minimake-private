@@ -23,4 +23,9 @@ void free_node_rule(struct Node_rule *n);
 void free_all_nodes(struct Node_rule **n);
 
 char *remove_back_ws(char *string);
+
+
+void extract_var(char *res, char delim, char *string, int start);
+void find_and_replace(char *dest, char *string, struct Node_var **vars);
+
 #endif

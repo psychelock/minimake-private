@@ -1,6 +1,9 @@
 lol= var
 TMP= tmp
-all: $(lol)
+all: $(lol) $(TMP)
 
 var:
+	echo hi
+
+tmp:
 	echo hi

@@ -137,7 +137,7 @@ char *remove_back_ws(char *string)
     return string;
 }
 
-static void extract_var(char *res, char delim, char *string, int start)
+void extract_var(char *res, char delim, char *string, int start)
 {
     for(int i = start; string[i] != delim && string[i+1]; i++)
     {
@@ -145,7 +145,7 @@ static void extract_var(char *res, char delim, char *string, int start)
     }
 }
 
-static void find_and_replace(char *dest, char *string, struct Node_var **vars)
+void find_and_replace(char *dest, char *string, struct Node_var **vars)
 {
     int spaces = 3;
     char variable[255] = "\0";

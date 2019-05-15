@@ -49,7 +49,8 @@ int main (int argc, char *argv[])
         free_resources(rules, allnodes);
         exit(2);
     }
-    enum error returnval = exec_list( rules, allnodes->nodes, NULL);
+    enum error returnval = exec_list( rules, allnodes->nodes,\
+                                        allnodes->vars, NULL);
     free_resources(rules, allnodes);
     handle_return(returnval);
     return 0;

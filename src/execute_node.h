@@ -9,7 +9,8 @@
 #include "parse_rule.h"
 #include "tools.h"
 
-error execute_node(struct Node_rule* n);
-error exec_list(char **rules, struct Node_rule **nodes, char *parent);
+error execute_node(struct Node_rule* n, struct Node_var **vars);
+error exec_list(char **rules, struct Node_rule **nodes, \
+                struct Node_var **vars, char *parent);
 
 #endif

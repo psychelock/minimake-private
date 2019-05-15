@@ -43,8 +43,15 @@ static char *add_start(char *a, char b)
     return res;
 }
 
-error execute_node(struct Node_rule *n)
+/*static void find_and_replace(char *string, struct Node_var **vars)
 {
+    if(!vars)
+        return;
+}*/
+
+error execute_node(struct Node_rule *n, struct Node_var **vars)
+{
+    vars = vars;
     int dontprint;
     char **commands = n->recipe;
     if(commands[0] == NULL)
@@ -101,26 +108,29 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
     return NULL;
 }
 
-static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes)
+static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,\
+                            struct Node_var **vars)
 {
     int returnval = 0;
     if(strcmp(rule->depend[0], "") != 0)
-        returnval = handler(returnval, exec_list(rule->depend, nodes, rule->target));
+        returnval = handler(returnval, exec_list(rule->depend, nodes, \
+                            vars, rule->target));
     if(returnval > 2)
         return returnval;
     if(last_modif(rule->target) == 0)
-        return handler(returnval,execute_node(rule));
+        return handler(returnval,execute_node(rule, vars));
     return returnval;
 }
 
-error exec_list(char **rules, struct Node_rule **nodes, char *parent)
+error exec_list(char **rules, struct Node_rule **nodes, \
+                struct Node_var **vars, char *parent)
 {
     int returnval = 0;
     if(!rules[0])
     {
         if(parent == NULL)
             parent = nodes[0]->target;
-        return handler(returnval,exec_rule(nodes[0], nodes));
+        return handler(returnval,exec_rule(nodes[0], nodes, vars));
     }
     int exist = 0;
     for(int i =0 ; *(i+rules) != NULL && (returnval <= 2 ); i++)
@@ -136,7 +146,7 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
                     struct Node_rule *tmp = find_node(rules[i], nodes);
                     if(tmp)
                     {
-                        returnval = handler(returnval,exec_rule(tmp, nodes));
+                        returnval = handler(returnval,exec_rule(tmp, nodes, vars));
                     }
                     else if (file_exist(rules[i]))
                         continue;

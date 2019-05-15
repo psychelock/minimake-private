@@ -79,7 +79,8 @@ struct Node_var *find_node_var(char *name, struct Node_var **vars)
             if(strcmp(vars[i]->name,name) == 0)
                 return vars[i];
         }
-        return NULL;
+        else
+            return NULL;
     }
     return NULL;
 }
