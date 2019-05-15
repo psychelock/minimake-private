@@ -131,17 +131,20 @@ error exec_list(char **rules, struct Node_rule **nodes, char *parent)
         {
             if(!rule_exist(rules, rules[i], i))
             {
-                struct Node_rule *tmp = find_node(rules[i], nodes);
-                if(tmp)
+                if(strcmp(rules[i], "") != 0)
                 {
-                    returnval = handler(returnval,exec_rule(tmp, nodes));
-                }
-                else if (file_exist(rules[i]))
-                    continue;
-                else
-                {
-                    fprintf(stderr,"minimake: no rule to make target '%s'\n",rules[i]);
-                    return NoRule;
+                    struct Node_rule *tmp = find_node(rules[i], nodes);
+                    if(tmp)
+                    {
+                        returnval = handler(returnval,exec_rule(tmp, nodes));
+                    }
+                    else if (file_exist(rules[i]))
+                        continue;
+                    else
+                    {
+                        fprintf(stderr,"minimake: no rule to make target '%s'\n",rules[i]);
+                        return NoRule;
+                    }
                 }
             }
             else

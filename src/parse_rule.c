@@ -28,8 +28,7 @@ static void move_depend(char **tmp, int i)
     {
         strcpy(tmp[i], tmp[i+1]);
     }
-    //tmp[i] = NULL;
-    free(tmp[i]);
+    tmp[i] = "";
 }
 
 static char **split_depend(char *depend)
@@ -175,7 +174,7 @@ static void find_and_replace(char *dest, char *string, struct Node_var **vars)
 
 static void change_var_depend(char **depend, struct Node_var **vars)
 {
-    char variable[255];
+    char variable[255] = "";
     if(!depend)
         return;
     for(int i =0; depend[i]; i++)

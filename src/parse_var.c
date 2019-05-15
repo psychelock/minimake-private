@@ -23,6 +23,8 @@ struct Node_var *create_node_var(char *line)
 
     lhs = remove_front_ws(lhs);
     lhs = remove_back_ws(lhs);
+    char *rhs= strtok(NULL, "=");
+    rhs = remove_front_ws(rhs);
 
     if(strchr(lhs, ' ') != NULL)
     {
@@ -32,9 +34,9 @@ struct Node_var *create_node_var(char *line)
     char *name= (char *)calloc(50,sizeof(char));
     strcpy(name, lhs);
 
-    char *rhs= strtok(NULL, "=");
-    char *value= (char *)malloc(255 *sizeof(char));
-    strcpy(value, remove_front_ws(rhs));
+    char *value= (char *)calloc(255,sizeof(char));
+    strcpy(value, rhs);
+
     value[strlen(value)-1]='\0';
 
     struct Node_var *res = (struct Node_var*) malloc (sizeof(struct Node_var));
@@ -72,8 +74,12 @@ struct Node_var *find_node_var(char *name, struct Node_var **vars)
         return NULL;
     for(int i = 0 ; vars[i] != NULL; i++)
     {
-        if(strcmp(vars[i]->name,name) == 0)
-            return vars[i];
+        if(vars[i])
+        {
+            if(strcmp(vars[i]->name,name) == 0)
+                return vars[i];
+        }
+        return NULL;
     }
     return NULL;
 }
