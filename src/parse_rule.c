@@ -164,7 +164,7 @@ static void find_and_replace(char *dest, char *string, struct Node_var **vars)
         variable[0] = *(string+1);
     }
     struct Node_var *tmp = find_node_var(variable,vars);
-    if(tmp)
+    if(tmp && ( strlen(dest) + strlen(tmp->value) ) < 50 )
     {
         spaces += strlen(variable);
         strcat(dest,tmp->value);
@@ -193,8 +193,10 @@ static void change_var_depend(char **depend, struct Node_var **vars)
             else
                 variable[0] = *(depend[i]+1);
             struct Node_var* tmp = find_node_var(variable, vars);
-            if(tmp)
-                strcpy(depend[i], tmp->value);
+            if(tmp && strlen(tmp->value) < 50)
+            {
+                strncpy(depend[i], tmp->value, strlen(tmp->value));
+            }
             else
             {
                 move_depend(depend, i);

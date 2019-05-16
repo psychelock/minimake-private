@@ -1,5 +1,5 @@
-SRC=options.c parse.c parse_var.c parse_rule.c execute_node.c tools.c main.c
-OBJ=options.o parse.o parse_var.o parse_rule.o execute_node.o tools.o main.o
+SRC=src/options.c src/parse.c src/parse_var.c src/parse_rule.c src/execute_node.c src/tools.c src/main.c
+OBJ=src/options.o src/parse.o src/parse_var.o src/parse_rule.o src/execute_node.o src/tools.o src/main.o
 
 all: $(OBJ)
 	gcc -o minimake $(OBJ)

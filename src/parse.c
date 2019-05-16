@@ -60,7 +60,7 @@ struct AllNodes *parse_makefile(FILE *input)
             if(var_count >= total_var)
             {
                 total_var *= 2;
-                vars = realloc(vars, (var_count) * sizeof(struct Node_var*));
+                vars = realloc(vars, (total_var) * sizeof(struct Node_var*));
             }
             vars[var_count] = NULL;
         }
