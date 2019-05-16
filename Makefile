@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-Wall -Werror -Wextra -pedantic -std=c99 -g -D _POSIX_C_SOURCE=200809L
+CFLAGS=-Wall -Werror -Wextra -pedantic -std=c99 -g -D _POSIX_C_SOURCE=200809L \
+       -fsanitize=address
 SRC=${wildcard src/*.c}
 OBJS=${SRC:.c=.o}
 EXEC=minimake
