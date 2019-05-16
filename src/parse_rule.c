@@ -236,9 +236,14 @@ struct Node_rule* create_node_rule (char *line1, FILE *input, struct Node_var **
     }
 
     struct Node_rule *res = (struct Node_rule*)malloc(sizeof(struct Node_rule));
+    char *implicittarget = (char *)malloc(50 * sizeof(char));
+    char **implicitdepend = (char **)malloc(sizeof(char *));
+    implicitdepend[0]= NULL;
     res->target = rule;
     res->depend = alldepend;
     res->recipe = recipe;
+    res->implicittarget = implicittarget;
+    res->implicitdepend = implicitdepend;
     return res;
 }
 
@@ -257,6 +262,8 @@ void free_node_rule(struct Node_rule *n)
     free(n->target);
     free_string(n->depend);
     free_string(n->recipe);
+    free(n->implicittarget);
+    free_string(n->implicitdepend);
     free(n);
 }
 
@@ -272,4 +279,37 @@ void free_all_nodes(struct Node_rule **n)
         }
     }
     free(n);
+}
+
+static int wildcard(const char *pattern, const char *string)
+{
+    if(*pattern == '\0')
+        return (*string =='\0');
+    if(*pattern == *string)
+        return (*string != '\0' && wildcard(pattern+1, string +1));
+    if(*pattern == '%')
+        return (wildcard(pattern+1,string) || \
+                (*string != '\0' && wildcard(pattern, string+1)));
+    return 0;
+}
+
+
+struct Node_rule *find_node(char *target, struct Node_rule **nodes)
+{
+    struct Node_rule *res = NULL;
+    size_t len = 0;
+    if(!nodes)
+        return NULL;
+    for(int i = 0; nodes[i] != NULL; i++)
+    {
+        if(wildcard(nodes[i]->target, target))
+        {
+            if(len <= strlen(nodes[i]->target))
+            {
+                len = strlen(nodes[i]->target);
+                res = nodes[i];
+            }
+        }
+    }
+    return res;
 }

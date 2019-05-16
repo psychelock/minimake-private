@@ -15,6 +15,8 @@ struct Node_rule
     char *target;
     char **depend;
     char **recipe;
+    char *implicittarget;
+    char **implicitdepend;
 };
 
 struct Node_rule *create_node_rule(char *line1, FILE *input, struct Node_var **vars);
@@ -23,5 +25,6 @@ void free_node_rule(struct Node_rule *n);
 void free_all_nodes(struct Node_rule **n);
 
 char *remove_back_ws(char *string);
+struct Node_rule *find_node(char *target, struct Node_rule **nodes);
 
 #endif

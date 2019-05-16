@@ -141,16 +141,6 @@ struct Node_rule *find_non_implicit_node(struct Node_rule **nodes)
     return NULL;
 }
 
-static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
-{
-    for(int i = 0; *(i + nodes) != NULL; i++)
-    {
-        if(strcmp(nodes[i]->target,target) ==0)
-            return nodes[i];
-    }
-    return NULL;
-}
-
 static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,\
         struct Node_var **vars, struct Node_var **env)
 {

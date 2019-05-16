@@ -5,9 +5,9 @@ int find_option(char *list[], int n, char opt)
     char option[2];
     option[0] = '-';
     option[1] = opt;
-    for(int i = 1; i < n ; i ++)
+    for(int i = 1; i < n && list[i] != NULL; i ++)
     {
-        if (strcmp(list[i],option) == 0)
+        if (strncmp(list[i],option, 2) == 0)
             return i;
     }
     return -1;
