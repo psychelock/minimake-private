@@ -6,8 +6,10 @@
 struct AllNodes *parse_makefile(FILE *input)
 {
     int error = 0;
-    int node_count = 1;
-    int var_count = 1;
+    int total_node = 1;
+    int total_var = 1;
+    int node_count = 0;
+    int var_count = 0;
 
     struct AllNodes *res = (struct AllNodes*) malloc (sizeof(struct AllNodes));
     struct Node_rule **nodes = \
@@ -36,10 +38,14 @@ struct AllNodes *parse_makefile(FILE *input)
                 error =1;
                 break;
             }
-            nodes[node_count-1] = tmp_rule;
+            nodes[node_count] = tmp_rule;
             node_count++;
-            nodes = realloc(nodes, (node_count) * sizeof(struct Node_rule*));
-            nodes[node_count-1] = NULL;
+            if(node_count >= total_node)
+            {
+                total_node *= 2;
+                nodes = realloc(nodes, (total_node) * sizeof(struct Node_rule*));
+            }
+            nodes[node_count] = NULL;
         }
         else if((strchr(line, '=')) != NULL)
         {
@@ -49,10 +55,14 @@ struct AllNodes *parse_makefile(FILE *input)
                 error = 1;
                 break;
             }
-            vars[var_count-1] = tmp_var;
+            vars[var_count] = tmp_var;
             var_count++;
-            vars = realloc(vars, (var_count) * sizeof(struct Node_var*));
-            vars[var_count-1] = NULL;
+            if(var_count >= total_var)
+            {
+                total_var *= 2;
+                vars = realloc(vars, (var_count) * sizeof(struct Node_var*));
+            }
+            vars[var_count] = NULL;
         }
         res->nodes = nodes;
         res->vars= vars;

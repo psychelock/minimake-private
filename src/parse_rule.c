@@ -86,7 +86,8 @@ static int comment(char *buffer)
 
 static char **split_commands(FILE *input)
 {
-    int count = 1;
+    int total = 1;
+    int count = 0;
     char **res = (char**)malloc(sizeof(char*));
     res[0]=NULL;
     char *buffer= NULL;
@@ -106,11 +107,15 @@ static char **split_commands(FILE *input)
                 free(buffer);
                 return NULL;
             }
-            res[count-1] = (char*)malloc(255*sizeof(char));
-            strcpy(res[count-1], buffer);
+            res[count] = (char*)malloc(255*sizeof(char));
+            strcpy(res[count], buffer);
             count++;
-            res = realloc(res, (count) * sizeof(char*));
-            res[count-1] = NULL;
+            if(count >= total)
+            {
+                total *= 2;
+                res = realloc(res, (total) * sizeof(char*));
+            }
+            res[count] = NULL;
         }
         else if(comment(buffer))
             continue;
@@ -236,14 +241,9 @@ struct Node_rule* create_node_rule (char *line1, FILE *input, struct Node_var **
     }
 
     struct Node_rule *res = (struct Node_rule*)malloc(sizeof(struct Node_rule));
-    char *implicittarget = (char *)malloc(50 * sizeof(char));
-    char **implicitdepend = (char **)malloc(sizeof(char *));
-    implicitdepend[0]= NULL;
     res->target = rule;
     res->depend = alldepend;
     res->recipe = recipe;
-    res->implicittarget = implicittarget;
-    res->implicitdepend = implicitdepend;
     return res;
 }
 
@@ -262,8 +262,6 @@ void free_node_rule(struct Node_rule *n)
     free(n->target);
     free_string(n->depend);
     free_string(n->recipe);
-    free(n->implicittarget);
-    free_string(n->implicitdepend);
     free(n);
 }
 

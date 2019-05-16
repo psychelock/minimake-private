@@ -15,8 +15,6 @@ struct Node_rule
     char *target;
     char **depend;
     char **recipe;
-    char *implicittarget;
-    char **implicitdepend;
 };
 
 struct Node_rule *create_node_rule(char *line1, FILE *input, struct Node_var **vars);

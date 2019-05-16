@@ -85,19 +85,42 @@ struct Node_var *find_node_var(char *name, struct Node_var **vars)
     }
     return NULL;
 }
+
+static struct Node_var *create_node_var_env(char *line)
+{
+    struct Node_var *res = (struct Node_var *)malloc(sizeof(struct Node_var));
+    char *token = strtok(line, "=");
+    char *name = (char *)calloc(50,sizeof(char));
+    strcpy(name, token);
+    token = strtok(NULL, "=");
+    char *value = (char *)calloc(50,sizeof(char));
+    if(token)
+        strcpy(value, token);
+    else
+        strcpy(value, "");
+    res->name = name;
+    res->value = value;
+    return res;
+}
+
 struct Node_var **parse_env_var(char **penv)
 {
-    int count = 1;
+    int total = 1;
+    int count = 0;
     struct Node_var **res = (struct Node_var **)malloc(sizeof(struct Node_var *));
     res[0]= NULL;
     if(!penv)
         return res;
     for(int i = 0 ; penv[i] != NULL; i++)
     {
-        struct Node_var *tmp = create_node_var(penv[i], 1);
-        res[count-1] = tmp;
+        struct Node_var *tmp = create_node_var_env(penv[i]);
+        res[count] = tmp;
         count++;
-        res= realloc(res, count * sizeof(struct Node_var));
+        if(count >= total)
+        {
+            total *= 2;
+            res= realloc(res, total * sizeof(struct Node_var));
+        }
         res[count] = NULL;
     }
     return res;
