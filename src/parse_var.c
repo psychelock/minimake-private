@@ -91,13 +91,16 @@ static struct Node_var *create_node_var_env(char *line)
     struct Node_var *res = (struct Node_var *)malloc(sizeof(struct Node_var));
     char *token = strtok(line, "=");
     char *name = (char *)calloc(50,sizeof(char));
-    strcpy(name, token);
+    if(strlen(token) < 50)
+        strncpy(name, token, strlen(token));
     token = strtok(NULL, "=");
     char *value = (char *)calloc(50,sizeof(char));
-    if(token)
-        strcpy(value, token);
+    if(token && strlen(token)< 50)
+        strncpy(value, token, strlen(token));
     else
+    {
         strcpy(value, "");
+    }
     res->name = name;
     res->value = value;
     return res;

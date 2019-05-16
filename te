@@ -1,4 +1,2 @@
-all:foo
-	echo 1
-%o:
-	echo hi
+all:
+	echo $(EDITOR)
