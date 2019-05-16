@@ -27,7 +27,8 @@ static void extract_var(char *res, char delim, char *string, int start)
     }
 }
 
-static void find_and_replace(char *res, char *string, struct Node_var **vars)
+static void find_and_replace(char *res, char *string, struct Node_var **vars,\
+                                struct Node_var **env)
 {
     int i =0;
     if(string[0] == '@')
@@ -49,12 +50,14 @@ static void find_and_replace(char *res, char *string, struct Node_var **vars)
                 variable[0] = string[i+1];
             }
             struct  Node_var *tmp = find_node_var(variable, vars);
+            if(!tmp)
+                tmp = find_node_var(variable, env);
             if(tmp)
             {
                 if(strchr(tmp->value, '$') != NULL)
                 {
                     char intermed[255] = "";
-                    find_and_replace(intermed, tmp->value, vars);
+                    find_and_replace(intermed, tmp->value, vars, env);
                     strcat(res, intermed);
                     count += strlen(intermed);
                 }
@@ -79,7 +82,7 @@ static void find_and_replace(char *res, char *string, struct Node_var **vars)
     }
 }
 
-error execute_node(struct Node_rule *n, struct Node_var **vars)
+error execute_node(struct Node_rule *n, struct Node_var **vars, struct Node_var **env)
 {
     vars = vars;
     char **commands = n->recipe;
@@ -93,7 +96,7 @@ error execute_node(struct Node_rule *n, struct Node_var **vars)
         if(commands[i] != NULL)
         {
             commands[i] = strip_ws(commands[i]);
-            find_and_replace(res, commands[i], vars);
+            find_and_replace(res, commands[i], vars, env);
             printf(res);
             fflush(stdout);
 
@@ -137,28 +140,28 @@ static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
 }
 
 static enum error exec_rule(struct Node_rule *rule, struct Node_rule **nodes,\
-        struct Node_var **vars)
+        struct Node_var **vars, struct Node_var **env)
 {
     int returnval = 0;
     if(strcmp(rule->depend[0], "") != 0)
         returnval = handler(returnval, exec_list(rule->depend, nodes, \
-                    vars, rule->target));
+                    vars, env, rule->target));
     if(returnval > 2)
         return returnval;
     if(last_modif(rule->target) == 0)
-        return handler(returnval,execute_node(rule, vars));
+        return handler(returnval,execute_node(rule, vars, env));
     return returnval;
 }
 
 error exec_list(char **rules, struct Node_rule **nodes, \
-        struct Node_var **vars, char *parent)
+        struct Node_var **vars, struct Node_var **env, char *parent)
 {
     int returnval = 0;
     if(!rules[0])
     {
         if(parent == NULL)
             parent = nodes[0]->target;
-        return handler(returnval,exec_rule(nodes[0], nodes, vars));
+        return handler(returnval,exec_rule(nodes[0], nodes, vars, env));
     }
     int exist = 0;
     for(int i =0 ; *(i+rules) != NULL && (returnval <= 2 ); i++)
@@ -174,7 +177,7 @@ error exec_list(char **rules, struct Node_rule **nodes, \
                     struct Node_rule *tmp = find_node(rules[i], nodes);
                     if(tmp)
                     {
-                        returnval = handler(returnval,exec_rule(tmp, nodes, vars));
+                        returnval = handler(returnval,exec_rule(tmp, nodes, vars, env));
                     }
                     else if (file_exist(rules[i]))
                         continue;

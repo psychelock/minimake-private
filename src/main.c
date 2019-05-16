@@ -7,7 +7,7 @@
 #include "execute_node.h"
 #include "tools.h"
 
-int main (int argc, char *argv[])
+int main (int argc, char *argv[], char *envp[])
 {
     char **rules;
     struct AllNodes *allnodes;
@@ -49,9 +49,12 @@ int main (int argc, char *argv[])
         free_resources(rules, allnodes);
         exit(2);
     }
+    struct Node_var **envvar = parse_env_var(envp);
     enum error returnval = exec_list( rules, allnodes->nodes,\
-                                        allnodes->vars, NULL);
+                                        allnodes->vars, envvar, NULL);
+    envvar = envvar;
     free_resources(rules, allnodes);
+    free_all_node_var(envvar);
     handle_return(returnval);
     return 0;
 }

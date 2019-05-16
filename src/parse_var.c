@@ -12,7 +12,7 @@ char *remove_front_ws(char *string)
     return string+i;
 }
 
-struct Node_var *create_node_var(char *line)
+struct Node_var *create_node_var(char *line, int env)
 {
     if(*line == '=')
     {
@@ -37,7 +37,8 @@ struct Node_var *create_node_var(char *line)
     char *value= (char *)calloc(255,sizeof(char));
     strcpy(value, rhs);
 
-    value[strlen(value)-1]='\0';
+    if(!env)
+        value[strlen(value)-1]='\0';
 
     struct Node_var *res = (struct Node_var*) malloc (sizeof(struct Node_var));
     res->name = name;
@@ -84,3 +85,21 @@ struct Node_var *find_node_var(char *name, struct Node_var **vars)
     }
     return NULL;
 }
+struct Node_var **parse_env_var(char **penv)
+{
+    int count = 1;
+    struct Node_var **res = (struct Node_var **)malloc(sizeof(struct Node_var *));
+    res[0]= NULL;
+    if(!penv)
+        return res;
+    for(int i = 0 ; penv[i] != NULL; i++)
+    {
+        struct Node_var *tmp = create_node_var(penv[i], 1);
+        res[count-1] = tmp;
+        count++;
+        res= realloc(res, count * sizeof(struct Node_var));
+        res[count] = NULL;
+    }
+    return res;
+}
+

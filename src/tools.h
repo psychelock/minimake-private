@@ -13,6 +13,7 @@
 #include "parse_rule.h"
 #include "parse_var.h"
 
+struct Node_var;
 struct Node_rule;
 struct AllNodes;
 

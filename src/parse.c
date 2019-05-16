@@ -43,7 +43,7 @@ struct AllNodes *parse_makefile(FILE *input)
         }
         else if((strchr(line, '=')) != NULL)
         {
-            struct Node_var *tmp_var = create_node_var(line);
+            struct Node_var *tmp_var = create_node_var(line, 0);
             if(!tmp_var)
             {
                 error = 1;
