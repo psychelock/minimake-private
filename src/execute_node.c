@@ -51,8 +51,18 @@ static void find_and_replace(char *res, char *string, struct Node_var **vars)
             struct  Node_var *tmp = find_node_var(variable, vars);
             if(tmp)
             {
-                strcat(res, tmp->value);
-                count += strlen(tmp->value);
+                if(strchr(tmp->value, '$') != NULL)
+                {
+                    char intermed[255] = "";
+                    find_and_replace(intermed, tmp->value, vars);
+                    strcat(res, intermed);
+                    count += strlen(intermed);
+                }
+                else
+                {
+                    strcat(res, tmp->value);
+                    count += strlen(tmp->value);
+                }
             }
             else
             {

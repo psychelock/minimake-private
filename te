@@ -1,3 +1,6 @@
+FILE= $(lol) $(hi)
 all:
 	echo $(FILE)
-FILE =		foo bar
+lol=9
+hi=9
+
