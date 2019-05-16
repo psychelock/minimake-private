@@ -27,12 +27,16 @@ static void extract_var(char *res, char delim, char *string, int start)
     }
 }
 
-static void find_and_replace(char *res, char *string, struct Node_var **vars,\
+static int find_and_replace(char *res, char *string, struct Node_var **vars,\
                                 struct Node_var **env)
 {
-    int i =0;
+    int check = 0;
     if(string[0] == '@')
-        i++;
+    {
+        check=  1;
+        string++;
+    }
+    int i =0;
     int count = 0;
     int spaces = 3;
     char variable[255] = "";
@@ -80,6 +84,7 @@ static void find_and_replace(char *res, char *string, struct Node_var **vars,\
             count++;
         }
     }
+    return check;
 }
 
 error execute_node(struct Node_rule *n, struct Node_var **vars, struct Node_var **env)
@@ -96,8 +101,9 @@ error execute_node(struct Node_rule *n, struct Node_var **vars, struct Node_var 
         if(commands[i] != NULL)
         {
             commands[i] = strip_ws(commands[i]);
-            find_and_replace(res, commands[i], vars, env);
-            printf(res);
+            int print  = find_and_replace(res, commands[i], vars, env);
+            if(!print)
+                printf(res);
             fflush(stdout);
 
             pid_t child_pid;
