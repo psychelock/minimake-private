@@ -64,6 +64,15 @@ struct AllNodes *parse_makefile(FILE *input)
             }
             vars[var_count] = NULL;
         }
+        else
+        {
+            if(strcmp(line, "\n") != 0)
+            {
+                error = 1;
+                parse_error("File", "Missing seperator");
+                break;
+            }
+        }
         res->nodes = nodes;
         res->vars= vars;
     }
