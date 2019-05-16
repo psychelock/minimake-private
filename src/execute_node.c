@@ -129,6 +129,18 @@ error execute_node(struct Node_rule *n, struct Node_var **vars, struct Node_var 
     return NoError;
 }
 
+struct Node_rule *find_non_implicit_node(struct Node_rule **nodes)
+{
+    if(!nodes)
+        return NULL;
+    for(int i = 0; nodes[i] !=NULL; i++)
+    {
+        if(nodes[i]->target[i] != '%')
+            return nodes[i];
+    }
+    return NULL;
+}
+
 static struct Node_rule *find_node(char *target, struct Node_rule **nodes)
 {
     for(int i = 0; *(i + nodes) != NULL; i++)
@@ -159,9 +171,10 @@ error exec_list(char **rules, struct Node_rule **nodes, \
     int returnval = 0;
     if(!rules[0])
     {
+        struct Node_rule *inter = find_non_implicit_node(nodes);
         if(parent == NULL)
-            parent = nodes[0]->target;
-        return handler(returnval,exec_rule(nodes[0], nodes, vars, env));
+            parent = inter->target;
+        return handler(returnval,exec_rule(inter, nodes, vars, env));
     }
     int exist = 0;
     for(int i =0 ; *(i+rules) != NULL && (returnval <= 2 ); i++)

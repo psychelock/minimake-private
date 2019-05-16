@@ -1,6 +1,0 @@
-FILE= $(lol) $(hi)
-all:
-	echo $(FILE)
-lol=9
-hi=9
-

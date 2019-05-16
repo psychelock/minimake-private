@@ -43,7 +43,7 @@ int main (int argc, char *argv[], char *envp[])
         exit(2);
     }
 
-    if(!allnodes->nodes[0])
+    if(!find_non_implicit_node(allnodes->nodes))
     {
         fprintf(stderr, "minimake: no target to build\n");
         free_resources(rules, allnodes);
